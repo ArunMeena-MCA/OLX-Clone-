@@ -23,6 +23,20 @@ module.exports.likeProducts = (req, res) => {
 
 }
 
+module.exports.dislikeProducts = (req, res) => {
+    let productId = req.body.productId;
+    let userId = req.body.userId;
+
+    Users.updateOne({ _id: userId }, { $pull: { likedProducts: productId } })
+        .then(() => {
+            res.send({ message: 'Disliked success.' })
+        })
+        .catch(() => {
+            res.send({ message: 'server err' })
+        })
+
+}
+
 module.exports.signup = (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
@@ -91,7 +105,7 @@ module.exports.login = (req, res) => {
                     const token = jwt.sign({
                         data: result
                     }, 'MYKEY', { expiresIn: '1h' });
-                    res.send({ message: 'find success.', token: token, userId: result._id })
+                    res.send({ message: 'find success.', token: token, userId: result._id, username: result.username })
                 }
                 if (result.password != password) {
                     res.send({ message: 'password wrong.' })
